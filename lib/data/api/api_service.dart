@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:story_app/data/model/login.dart';
@@ -6,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:story_app/data/model/register.dart';
 import 'package:story_app/data/responses/detail_story_response.dart';
 import 'package:story_app/data/responses/story_response.dart';
+import 'package:story_app/data/responses/upload_response.dart';
 
 class ApiService {
   static const String _baseUrl = 'https://story-api.dicoding.dev/v1';
@@ -85,6 +87,47 @@ class ApiService {
       return DetailResponse.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load story');
+    }
+  }
+
+  Future<UploadResponse> uploadStory(
+    List<int> image,
+    String description,
+    String fileName,
+    String token,
+  ) async {
+    var request = http.MultipartRequest('POST', Uri.parse('$_baseUrl$_story'));
+
+    final multiPartFile = http.MultipartFile.fromBytes(
+      'photo',
+      image,
+      filename: fileName,
+    );
+    final Map<String, String> data = {
+      'description': description,
+    };
+    final Map<String, String> headers = {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': 'Bearer $token',
+    };
+
+    request.files.add(multiPartFile);
+    request.fields.addAll(data);
+    request.headers.addAll(headers);
+
+    final http.StreamedResponse streamedResponse = await request.send();
+    final int statusCode = streamedResponse.statusCode;
+
+    final Uint8List responseList = await streamedResponse.stream.toBytes();
+    final String responseData = String.fromCharCodes(responseList);
+
+    if (statusCode == 201) {
+      final UploadResponse uploadResponse =
+          UploadResponse.fromJson(responseData);
+      debugPrint('Upload Response: $uploadResponse');
+      return uploadResponse;
+    } else {
+      throw Exception('Failed to upload story');
     }
   }
 }

@@ -9,7 +9,7 @@ class StoryProvider extends ChangeNotifier {
   final AuthRepository authRepository;
 
   StoryProvider({required this.apiService, required this.authRepository}) {
-    _fetchAllStory();
+    fetchAllStory();
   }
 
   late StoryResponse _storyResponse;
@@ -21,7 +21,7 @@ class StoryProvider extends ChangeNotifier {
   String? _message;
   String? get message => _message;
 
-  Future<dynamic> _fetchAllStory() async {
+  Future<dynamic> fetchAllStory() async {
     try {
       _state = ResultState.loading;
       notifyListeners();
