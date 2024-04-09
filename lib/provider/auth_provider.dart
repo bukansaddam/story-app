@@ -103,7 +103,7 @@ class AuthProvider extends ChangeNotifier {
     return user?.token ?? '';
   }
 
-  Future<bool?> checkLogin() async {
+  Future<bool> checkLogin() async {
     isLoggedIn = await authRepository.getState();
     notifyListeners();
     return isLoggedIn;

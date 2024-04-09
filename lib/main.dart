@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/local/auth_repository.dart';
 import 'package:story_app/provider/auth_provider.dart';
+import 'package:story_app/provider/story_provider.dart';
 import 'package:story_app/screen/home_screen.dart';
 import 'package:story_app/screen/login_screen.dart';
 import 'package:story_app/screen/register_screen.dart';
@@ -54,6 +55,12 @@ class MyApp extends StatelessWidget {
             authRepository: AuthRepository(),
           ),
         ),
+        ChangeNotifierProvider(
+          create: (_) => StoryProvider(
+            apiService: ApiService(),
+            authRepository: AuthRepository(),
+          ),
+        )
       ],
       child: MaterialApp.router(
         theme: ThemeData.dark().copyWith(
