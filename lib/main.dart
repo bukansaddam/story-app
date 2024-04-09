@@ -4,6 +4,7 @@ import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/local/auth_repository.dart';
 import 'package:story_app/provider/auth_provider.dart';
 import 'package:story_app/provider/story_provider.dart';
+import 'package:story_app/screen/detail_screen.dart';
 import 'package:story_app/screen/home_screen.dart';
 import 'package:story_app/screen/login_screen.dart';
 import 'package:story_app/screen/register_screen.dart';
@@ -39,6 +40,14 @@ final GoRouter _router = GoRouter(initialLocation: '/home', routes: [
     path: '/register',
     name: 'register',
     builder: (context, state) => const RegisterScreen(),
+  ),
+  GoRoute(
+    path: '/detail/:id',
+    name: 'detail',
+    builder: (context, state) {
+      final id = state.pathParameters['id'];
+      return DetailScreen(id: id!);
+    },
   ),
 ]);
 

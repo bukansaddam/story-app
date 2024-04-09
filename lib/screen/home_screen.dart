@@ -55,47 +55,51 @@ class HomeScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (storyProvider.state == ResultState.hasData) {
           return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                if (constraints.maxWidth <= 600) {
-                  return ListView.builder(
-                    itemCount: storyProvider.storyResponse.listStory.length,
-                    itemBuilder: (context, index) {
-                      final story = storyProvider.storyResponse.listStory[index];
-                      return CardItem(context: context, story: story);
-                    },
-                  );
-                } else if (constraints.maxWidth <= 1200) {
-                  return GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: storyProvider.storyResponse.listStory.length,
-                    itemBuilder: (context, index) {
-                      final story = storyProvider.storyResponse.listStory[index];
-                      return CardItem(context: context, story: story);
-                    },
-                  );
-                } else {
-                  return GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: storyProvider.storyResponse.listStory.length,
-                    itemBuilder: (context, index) {
-                      final story = storyProvider.storyResponse.listStory[index];
-                      return CardItem(context: context, story: story);
-                    },
-                  );
-                }
-              },
-            )
-          );
+              padding: const EdgeInsets.all(16.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth <= 600) {
+                    return ListView.builder(
+                      itemCount: storyProvider.storyResponse.listStory.length,
+                      itemBuilder: (context, index) {
+                        final story =
+                            storyProvider.storyResponse.listStory[index];
+                        return CardItem(context: context, story: story);
+                      },
+                    );
+                  } else if (constraints.maxWidth <= 1200) {
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: storyProvider.storyResponse.listStory.length,
+                      itemBuilder: (context, index) {
+                        final story =
+                            storyProvider.storyResponse.listStory[index];
+                        return CardItem(context: context, story: story);
+                      },
+                    );
+                  } else {
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: storyProvider.storyResponse.listStory.length,
+                      itemBuilder: (context, index) {
+                        final story =
+                            storyProvider.storyResponse.listStory[index];
+                        return CardItem(context: context, story: story);
+                      },
+                    );
+                  }
+                },
+              ));
         } else {
           return Center(child: Text(storyProvider.message ?? 'Error'));
         }

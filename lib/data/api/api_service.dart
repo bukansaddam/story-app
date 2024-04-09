@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:story_app/data/model/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:story_app/data/model/register.dart';
+import 'package:story_app/data/responses/detail_story_response.dart';
 import 'package:story_app/data/responses/story_response.dart';
 
 class ApiService {
@@ -66,6 +67,22 @@ class ApiService {
 
     if (response.statusCode == 200) {
       return StoryResponse.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load story');
+    }
+  }
+
+  Future<DetailResponse> detailStory(
+      {required String id, required String token}) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl$_story/$id'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return DetailResponse.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load story');
     }

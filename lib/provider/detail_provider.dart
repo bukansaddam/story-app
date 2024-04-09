@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:story_app/common/result_state.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/local/auth_repository.dart';
-import 'package:story_app/data/responses/story_response.dart';
+import 'package:story_app/data/responses/detail_story_response.dart';
 
-class StoryProvider extends ChangeNotifier {
+class DetailProvider extends ChangeNotifier {
   final ApiService apiService;
   final AuthRepository authRepository;
 
-  StoryProvider({required this.apiService, required this.authRepository}) {
-    _fetchAllStory();
+  DetailProvider(
+      {required this.apiService, required this.authRepository, String? id}) {
+    _fetchDetailStory(id!);
   }
 
-  late StoryResponse _storyResponse;
-  StoryResponse get storyResponse => _storyResponse;
+  late DetailResponse _detailResponse;
+  DetailResponse get detailResponse => _detailResponse;
 
   late ResultState _state;
   ResultState get state => _state;
@@ -21,7 +22,7 @@ class StoryProvider extends ChangeNotifier {
   String? _message;
   String? get message => _message;
 
-  Future<dynamic> _fetchAllStory() async {
+  Future<dynamic> _fetchDetailStory(String id) async {
     try {
       _state = ResultState.loading;
       notifyListeners();
@@ -31,12 +32,12 @@ class StoryProvider extends ChangeNotifier {
       debugPrint('Token: $token');
 
       if (token != null) {
-        final stories = await apiService.listStory(token: token);
-        if (stories.listStory.isEmpty) {
+        final detailStory = await apiService.detailStory(token: token, id: id);
+        if (detailStory.error) {
           _state = ResultState.noData;
         } else {
           _state = ResultState.hasData;
-          _storyResponse = stories;
+          _detailResponse = detailStory;
         }
       } else {
         _state = ResultState.error;
