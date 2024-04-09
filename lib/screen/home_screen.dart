@@ -175,7 +175,7 @@ class HomeScreen extends StatelessWidget {
       provider.setImageFile(pickedFile);
       provider.setImagePath(pickedFile.path);
       GoRouter.of(context).goNamed('add_story');
-      Navigator.of(context).pop();
+      GoRouter.of(context).pop();
     }
   }
 
@@ -196,7 +196,7 @@ class HomeScreen extends StatelessWidget {
       provider.setImageFile(pickedFile);
       provider.setImagePath(pickedFile.path);
       GoRouter.of(context).goNamed('add_story');
-      Navigator.of(context).pop();
+      GoRouter.of(context).pop();
     }
   }
 }

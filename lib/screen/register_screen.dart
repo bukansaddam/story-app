@@ -65,171 +65,173 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16, top: 32),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Create an account to continue.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
-                        ),
-                        style: const TextStyle(color: Colors.black),
-                        cursorColor: Colors.orange,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your name.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Username',
-                        ),
-                        style: const TextStyle(color: Colors.black),
-                        cursorColor: Colors.orange,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your username.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                            icon: _obscureText
-                                ? const Icon(Icons.visibility_off)
-                                : const Icon(Icons.visibility),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
-                        style: const TextStyle(color: Colors.black),
-                        cursorColor: Colors.orange,
-                        obscureText: _obscureText,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 32),
-                      context.watch<AuthProvider>().isLoadingRegister
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.orange),
-                                  padding: MaterialStateProperty.all(
-                                    const EdgeInsets.symmetric(
-                                      vertical: 16,
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Create an account to continue.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Name',
+                          ),
+                          style: const TextStyle(color: Colors.black),
+                          cursorColor: Colors.orange,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your name.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Username',
+                          ),
+                          style: const TextStyle(color: Colors.black),
+                          cursorColor: Colors.orange,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your username.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                              icon: _obscureText
+                                  ? const Icon(Icons.visibility_off)
+                                  : const Icon(Icons.visibility),
+                            ),
+                          ),
+                          style: const TextStyle(color: Colors.black),
+                          cursorColor: Colors.orange,
+                          obscureText: _obscureText,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 32),
+                        context.watch<AuthProvider>().isLoadingRegister
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all(Colors.orange),
+                                    padding: MaterialStateProperty.all(
+                                      const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    foregroundColor: MaterialStateProperty.all(
+                                      Colors.white,
                                     ),
                                   ),
-                                  shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  foregroundColor: MaterialStateProperty.all(
-                                    Colors.white,
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  final provider = context.read<AuthProvider>();
-                                  if (formKey.currentState!.validate()) {
-                                    final scaffoldMessenger =
-                                        ScaffoldMessenger.of(context);
-                                    final result = await provider.register(
-                                      _nameController.text,
-                                      _usernameController.text,
-                                      _passwordController.text,
-                                    );
-
-                                    if (result) {
-                                      scaffoldMessenger.showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Register success'),
-                                        ),
+                                  onPressed: () async {
+                                    final provider = context.read<AuthProvider>();
+                                    if (formKey.currentState!.validate()) {
+                                      final scaffoldMessenger =
+                                          ScaffoldMessenger.of(context);
+                                      final result = await provider.register(
+                                        _nameController.text,
+                                        _usernameController.text,
+                                        _passwordController.text,
                                       );
-                                      context.goNamed('login');
-                                    } else {
-                                      scaffoldMessenger.showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            provider.errorMessageRegister ??
-                                                'Register failed',
+                  
+                                      if (result) {
+                                        scaffoldMessenger.showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Register success'),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                        context.goNamed('login');
+                                      } else {
+                                        scaffoldMessenger.showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              provider.errorMessageRegister ??
+                                                  'Register failed',
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     }
-                                  }
-                                },
-                                child: const Text(
-                                  'SIGN UP',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                  },
+                                  child: const Text(
+                                    'SIGN UP',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Already have an account ?',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              context.goNamed('login');
-                            },
-                            child: const Text(
-                              'Sign In',
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Already have an account ?',
                               style: TextStyle(
-                                color: Colors.orange,
+                                color: Colors.grey,
                               ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
+                            TextButton(
+                              onPressed: () {
+                                context.goNamed('login');
+                              },
+                              child: const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  color: Colors.orange,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
