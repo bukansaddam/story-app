@@ -12,7 +12,7 @@ class MapsScreen extends StatefulWidget {
 }
 
 class _MapsScreenState extends State<MapsScreen> {
-  final dicodingOffice = const LatLng(-6.8957473, 107.6337669);
+  final initialLocation = const LatLng(-7.2773, 112.7560);
 
   late GoogleMapController mapController;
 
@@ -119,14 +119,14 @@ class _MapsScreenState extends State<MapsScreen> {
                         },
                         markers: markers,
                         initialCameraPosition:
-                            CameraPosition(target: dicodingOffice, zoom: 18),
+                            CameraPosition(target: initialLocation, zoom: 18),
                         onMapCreated: (controller) {
                           setState(() {
                             mapController = controller;
                           });
 
                           final bound = boundsFromLatLngList([
-                            dicodingOffice,
+                            initialLocation,
                             ...storyProvider.stories.map((story) =>
                                 LatLng(story.lat ?? 0.0, story.lon ?? 0.0))
                           ]);
