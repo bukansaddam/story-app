@@ -20,6 +20,8 @@ class UploadProvider extends ChangeNotifier {
     List<int> bytes,
     String fileName,
     String description,
+    double latitude,
+    double longitude,
   ) async {
     try {
       message = '';
@@ -31,8 +33,8 @@ class UploadProvider extends ChangeNotifier {
       final token = repository?.token;
       debugPrint('Token: $token');
 
-      uploadResponse =
-          await apiService.uploadStory(bytes, fileName, description, token!);
+      uploadResponse = await apiService.uploadStory(
+          bytes, fileName, description, token!, latitude, longitude);
       message = uploadResponse?.message ?? "success";
       debugPrint('UploadResponse: ${uploadResponse?.message}');
       isUploading = false;

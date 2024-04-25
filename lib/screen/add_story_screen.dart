@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/provider/image_provider.dart';
 import 'package:story_app/provider/story_provider.dart';
@@ -18,6 +19,8 @@ class AddStoryScreen extends StatefulWidget {
 class _AddStoryScreenState extends State<AddStoryScreen> {
   final _formKey = GlobalKey<FormState>();
   final _storyDescriptionController = TextEditingController();
+  bool _includeLocation = false;
+  late LocationData? locationData;
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +54,30 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                 )
               : _showImage(),
         ),
-        const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _includeLocation,
+                      onChanged: (newValue) async {
+                        setState(() {
+                          _includeLocation = newValue!;
+                          if (_includeLocation) {
+                            _onMyLocationPressed();
+                          }
+                        });
+                      },
+                    ),
+                    const Text('Include Location'),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _storyDescriptionController,
                   decoration: const InputDecoration(
@@ -121,14 +141,44 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
           );
   }
 
+  _onMyLocationPressed() async {
+    final Location location = Location();
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    _snackBar("Fetching location data...");
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        _snackBar("Location services are not available");
+        return;
+      }
+    }
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        _snackBar("Location permission is denied");
+        return;
+      }
+    }
+
+    locationData = await location.getLocation();
+    if (locationData != null) {
+      _snackBar("Succes to fetch location");
+    } else {
+      _snackBar("Unable to fetch location data");
+    }
+  }
+
   _onUpload() async {
     final imageProvider = context.read<ImagesProvider>();
     final imagePath = imageProvider.imagePath;
     final imageFile = imageProvider.imageFile;
     final storyDescription = _storyDescriptionController.text;
     if (imagePath == null || imageFile == null) return;
-
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final fileName = imageFile.name;
     final image = await imageFile.readAsBytes();
@@ -137,7 +187,15 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
     final newBytes = await uploadProvider.compressImage(image);
 
-    await uploadProvider.upload(newBytes, storyDescription, fileName);
+    double latitude = 0;
+    double longitude = 0;
+    if (_includeLocation && locationData != null) {
+      latitude = locationData!.latitude!;
+      longitude = locationData!.longitude!;
+    }
+
+    await uploadProvider.upload(
+        newBytes, storyDescription, fileName, latitude, longitude);
     final storyProvider = context.read<StoryProvider>();
     await storyProvider.refreshStory();
 
@@ -148,13 +206,18 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
     debugPrint('UploadResponse: ${uploadProvider.uploadResponse?.message}');
 
-    scaffoldMessenger.showSnackBar(
-      SnackBar(
-        content:
-            Text(uploadProvider.uploadResponse?.message ?? 'Upload failed'),
-      ),
-    );
+    _snackBar(uploadProvider.uploadResponse?.message ?? 'Upload failed');
 
     GoRouter.of(context).goNamed('home');
+  }
+
+  _snackBar(String message) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
   }
 }
