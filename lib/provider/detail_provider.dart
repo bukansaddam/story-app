@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:story_app/common/result_state.dart';
+import 'package:story_app/common/loading_state.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/local/auth_repository.dart';
 import 'package:story_app/data/responses/detail_story_response.dart';
@@ -16,15 +16,11 @@ class DetailProvider extends ChangeNotifier {
   late DetailResponse _detailResponse;
   DetailResponse get detailResponse => _detailResponse;
 
-  late ResultState _state;
-  ResultState get state => _state;
-
-  String? _message;
-  String? get message => _message;
+  LoadingState detailState = const LoadingState.initial();
 
   Future<dynamic> _fetchDetailStory(String id) async {
     try {
-      _state = ResultState.loading;
+      detailState = const LoadingState.loading();
       notifyListeners();
 
       final repository = await authRepository.getUser();
@@ -34,18 +30,16 @@ class DetailProvider extends ChangeNotifier {
       if (token != null) {
         final detailStory = await apiService.detailStory(token: token, id: id);
         if (detailStory.error) {
-          _state = ResultState.noData;
+          detailState = LoadingState.error('Error: ${detailStory.message}');
         } else {
-          _state = ResultState.hasData;
+          detailState = const LoadingState.loaded();
           _detailResponse = detailStory;
         }
       } else {
-        _state = ResultState.error;
-        _message = 'No data returned from API';
+        detailState = const LoadingState.error('No data returned from API');
       }
     } catch (e) {
-      _state = ResultState.error;
-      _message = 'Error: $e';
+      detailState = LoadingState.error('Error: $e');
       debugPrint(e.toString());
     }
     notifyListeners();

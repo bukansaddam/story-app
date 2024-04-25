@@ -123,10 +123,15 @@ class ApiService {
     final String responseData = String.fromCharCodes(responseList);
 
     if (statusCode == 201) {
-      final UploadResponse uploadResponse =
-          UploadResponse.fromJson(responseData);
-      debugPrint('Upload Response: $uploadResponse');
-      return uploadResponse;
+      try {
+        final Map<String, dynamic> responseMap = jsonDecode(responseData);
+        final UploadResponse uploadResponse =
+            UploadResponse.fromJson(responseMap);
+        debugPrint('Upload Response: $uploadResponse');
+        return uploadResponse;
+      } catch (e) {
+        throw Exception('Failed to parse upload response: $e');
+      }
     } else {
       throw Exception('Failed to upload story');
     }

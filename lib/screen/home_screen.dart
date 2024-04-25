@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app/common/result_state.dart';
+import 'package:story_app/data/responses/story_response.dart';
 import 'package:story_app/provider/auth_provider.dart';
 import 'package:story_app/provider/image_provider.dart';
 import 'package:story_app/provider/story_provider.dart';
@@ -131,81 +131,73 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBody(BuildContext context) {
     return Consumer<StoryProvider>(
       builder: (context, storyProvider, _) {
-        if (storyProvider.state == ResultState.loading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (storyProvider.state == ResultState.hasData) {
-          final stories = storyProvider.stories;
-          return Padding(
+        final state = storyProvider.storyState;
+
+        return state.map(
+          initial: (_) => const SizedBox.shrink(),
+          loading: (_) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          loaded: (value) {
+            final stories = storyProvider.stories;
+
+            return Padding(
               padding: const EdgeInsets.all(16.0),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   if (constraints.maxWidth <= 600) {
-                    return ListView.builder(
-                      controller: scrollController,
-                      itemCount: stories.length +
-                          (storyProvider.pageItems != null ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == stories.length &&
-                            storyProvider.pageItems != null) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        final story = stories[index];
-                        return CardItem(context: context, story: story);
-                      },
-                    );
+                    return _buildListView(stories, storyProvider);
                   } else if (constraints.maxWidth <= 1200) {
-                    return GridView.builder(
-                      controller: scrollController,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: stories.length +
-                          (storyProvider.pageItems != null ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == stories.length &&
-                            storyProvider.pageItems != null) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        final story =
-                            storyProvider.storyResponse.listStory[index];
-                        return CardItem(context: context, story: story);
-                      },
-                    );
+                    return _buildGridView(stories, storyProvider,
+                        crossAxisCount: 2);
                   } else {
-                    return GridView.builder(
-                      controller: scrollController,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: stories.length +
-                          (storyProvider.pageItems != null ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == stories.length &&
-                            storyProvider.pageItems != null) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        final story =
-                            storyProvider.storyResponse.listStory[index];
-                        return CardItem(context: context, story: story);
-                      },
-                    );
+                    return _buildGridView(stories, storyProvider,
+                        crossAxisCount: 3);
                   }
                 },
-              ));
-        } else {
-          return Center(
-              child: Text(
-                  storyProvider.message ?? 'Error ${storyProvider.message}'));
+              ),
+            );
+          },
+          error: (value) => Center(
+            child: Text(
+              value.message,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListView(List<ListStory> stories, StoryProvider storyProvider) {
+    return ListView.builder(
+      controller: scrollController,
+      itemCount: stories.length + (storyProvider.pageItems != null ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == stories.length && storyProvider.pageItems != null) {
+          return const Center(child: CircularProgressIndicator());
         }
+        final story = stories[index];
+        return CardItem(context: context, story: story);
+      },
+    );
+  }
+
+  Widget _buildGridView(List<ListStory> stories, StoryProvider storyProvider,
+      {required int crossAxisCount}) {
+    return GridView.builder(
+      controller: scrollController,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: stories.length + (storyProvider.pageItems != null ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == stories.length && storyProvider.pageItems != null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final story = stories[index];
+        return CardItem(context: context, story: story);
       },
     );
   }

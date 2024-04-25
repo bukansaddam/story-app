@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story_app/common/result_state.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/local/auth_repository.dart';
+import 'package:story_app/data/responses/detail_story_response.dart';
 import 'package:story_app/provider/detail_provider.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -17,27 +17,42 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (_) => DetailProvider(
-              apiService: ApiService(),
-              authRepository: AuthRepository(),
-              id: widget.id,
+      create: (_) => DetailProvider(
+        apiService: ApiService(),
+        authRepository: AuthRepository(),
+        id: widget.id,
+      ),
+      child: Consumer<DetailProvider>(
+        builder: (context, detailProvider, child) {
+          final state = detailProvider.detailState;
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Detail'),
             ),
-        child: Consumer<DetailProvider>(
-          builder: (context, state, child) {
-            return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Detail'),
+            body: state.map(
+              initial: (_) => const SizedBox
+                  .shrink(), // Tidak melakukan apa-apa saat initial state
+              loading: (_) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              loaded: (value) {
+                final detailStory = detailProvider.detailResponse;
+                return _buildDetail(detailStory, context);
+              }, // Tampilkan detail saat data telah dimuat
+              error: (value) => Center(
+                child: Text(
+                  value.message,
                 ),
-                body: state.state == ResultState.loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : state.state == ResultState.hasData
-                        ? _buildDetail(state, context)
-                        : const Center(child: Text('No data')));
-          },
-        ));
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  Widget _buildDetail(DetailProvider state, BuildContext context) {
+  Widget _buildDetail(DetailResponse state, BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +62,7 @@ class _DetailScreenState extends State<DetailScreen> {
               bottomLeft: Radius.circular(12),
               bottomRight: Radius.circular(12),
             ),
-            child: Image.network(state.detailResponse.story.photoUrl,
+            child: Image.network(state.story.photoUrl,
                 fit: BoxFit.cover, width: double.infinity, height: 300),
           ),
           Padding(
@@ -55,11 +70,11 @@ class _DetailScreenState extends State<DetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(state.detailResponse.story.name,
+                Text(state.story.name,
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
-                Text(state.detailResponse.story.description),
+                Text(state.story.description),
               ],
             ),
           ),

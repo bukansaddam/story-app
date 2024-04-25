@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:story_app/common/result_state.dart';
+import 'package:story_app/common/loading_state.dart';
 import 'package:story_app/data/api/api_service.dart';
 import 'package:story_app/data/local/auth_repository.dart';
 import 'package:story_app/data/responses/story_response.dart';
@@ -13,11 +13,7 @@ class StoryProvider extends ChangeNotifier {
   late StoryResponse _storyResponse;
   StoryResponse get storyResponse => _storyResponse;
 
-  late ResultState _state = ResultState.initial;
-  ResultState get state => _state;
-
-  String? _message;
-  String? get message => _message;
+  LoadingState storyState = const LoadingState.initial();
 
   int? pageItems = 1;
   int sizeItems = 5;
@@ -27,7 +23,7 @@ class StoryProvider extends ChangeNotifier {
   Future<void> fetchAllStory() async {
     try {
       if (pageItems == 1) {
-        _state = ResultState.loading;
+        storyState = const LoadingState.loading();
         notifyListeners();
       }
 
@@ -39,11 +35,11 @@ class StoryProvider extends ChangeNotifier {
         final result = await apiService.listStory(
             token: token, page: pageItems!, size: sizeItems);
         if (result.listStory.isEmpty) {
-          _state = ResultState.noData;
+          storyState = const LoadingState.error('No data returned from API');
         } else {
-          _state = ResultState.hasData;
-          _storyResponse = result;
           stories.addAll(result.listStory);
+
+          storyState = const LoadingState.loaded();
 
           if (result.listStory.length < sizeItems) {
             pageItems = null;
@@ -52,12 +48,10 @@ class StoryProvider extends ChangeNotifier {
           }
         }
       } else {
-        _state = ResultState.error;
-        _message = 'No data returned from API';
+        storyState = const LoadingState.error('No data returned from API');
       }
     } catch (e) {
-      _state = ResultState.error;
-      _message = 'Error: $e';
+      storyState = LoadingState.error('Error: $e');
       debugPrint(e.toString());
     }
 

@@ -1,21 +1,15 @@
-import 'dart:convert';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class UploadResponse {
-  final bool error;
-  final String message;
+part 'upload_response.freezed.dart';
+part 'upload_response.g.dart';
 
-  UploadResponse({
-    required this.error,
-    required this.message,
-  });
+@freezed
+class UploadResponse with _$UploadResponse {
+  const factory UploadResponse({
+    required bool error,
+    required String message,
+  }) = _UploadResponse;
 
-  factory UploadResponse.fromMap(Map<String, dynamic> map) {
-    return UploadResponse(
-      error: map['error'] ?? false,
-      message: map['message'] ?? '',
-    );
-  }
-
-  factory UploadResponse.fromJson(String source) =>
-      UploadResponse.fromMap(json.decode(source));
+  factory UploadResponse.fromJson(Map<String, dynamic> json) =>
+      _$UploadResponseFromJson(json);
 }

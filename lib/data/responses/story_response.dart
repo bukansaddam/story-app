@@ -1,71 +1,32 @@
-import 'dart:convert';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-StoryResponse storyFromJson(String str) =>
-    StoryResponse.fromJson(json.decode(str));
+part 'story_response.freezed.dart';
+part 'story_response.g.dart';
 
-String storyToJson(StoryResponse data) => json.encode(data.toJson());
+@freezed
+class StoryResponse with _$StoryResponse {
+  const factory StoryResponse({
+    required bool error,
+    required String message,
+    @JsonKey(name: 'listStory') required List<ListStory> listStory,
+  }) = _StoryResponse;
 
-class StoryResponse {
-  bool error;
-  String message;
-  List<ListStory> listStory;
-
-  StoryResponse({
-    required this.error,
-    required this.message,
-    required this.listStory,
-  });
-
-  factory StoryResponse.fromJson(Map<String, dynamic> json) => StoryResponse(
-        error: json["error"],
-        message: json["message"],
-        listStory: List<ListStory>.from(
-            json["listStory"].map((x) => ListStory.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "error": error,
-        "message": message,
-        "listStory": List<dynamic>.from(listStory.map((x) => x.toJson())),
-      };
+  factory StoryResponse.fromJson(Map<String, dynamic> json) =>
+      _$StoryResponseFromJson(json);
 }
 
-class ListStory {
-  String id;
-  String name;
-  String description;
-  String photoUrl;
-  DateTime createdAt;
-  double lat;
-  double lon;
+@freezed
+class ListStory with _$ListStory {
+  const factory ListStory({
+    required String id,
+    required String name,
+    required String description,
+    required String photoUrl,
+    required DateTime createdAt,
+    double? lat,
+    double? lon,
+  }) = _ListStory;
 
-  ListStory({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.photoUrl,
-    required this.createdAt,
-    required this.lat,
-    required this.lon,
-  });
-
-  factory ListStory.fromJson(Map<String, dynamic> json) => ListStory(
-        id: json["id"],
-        name: json["name"],
-        description: json["description"],
-        photoUrl: json["photoUrl"],
-        createdAt: DateTime.parse(json["createdAt"]),
-        lat: json["lat"] != null ? json["lat"].toDouble() : 0.0,
-        lon: json["lon"] != null ? json["lon"].toDouble() : 0.0,
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "description": description,
-        "photoUrl": photoUrl,
-        "createdAt": createdAt.toIso8601String(),
-        "lat": lat,
-        "lon": lon,
-      };
+  factory ListStory.fromJson(Map<String, dynamic> json) =>
+      _$ListStoryFromJson(json);
 }
