@@ -135,8 +135,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all(Colors.orange),
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.orange),
                                     padding: MaterialStateProperty.all(
                                       const EdgeInsets.symmetric(
                                         vertical: 16,
@@ -161,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             _usernameController.text,
                                             _passwordController.text,
                                           );
-                  
+
                                       if (result) {
                                         context.goNamed('home');
                                         scaffoldMessenger.showSnackBar(

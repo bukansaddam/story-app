@@ -79,7 +79,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => UploadProvider(
-              apiService: ApiService(), authRepository: AuthRepository()),
+            apiService: ApiService(),
+            authRepository: AuthRepository(),
+          ),
         )
       ],
       child: MaterialApp.router(

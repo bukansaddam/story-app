@@ -139,7 +139,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
     await uploadProvider.upload(newBytes, storyDescription, fileName);
     final storyProvider = context.read<StoryProvider>();
-    await storyProvider.fetchAllStory();
+    await storyProvider.refreshStory();
 
     if (uploadProvider.uploadResponse != null) {
       imageProvider.setImageFile(null);

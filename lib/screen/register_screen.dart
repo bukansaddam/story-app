@@ -152,8 +152,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all(Colors.orange),
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.orange),
                                     padding: MaterialStateProperty.all(
                                       const EdgeInsets.symmetric(
                                         vertical: 16,
@@ -169,7 +169,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    final provider = context.read<AuthProvider>();
+                                    final provider =
+                                        context.read<AuthProvider>();
                                     if (formKey.currentState!.validate()) {
                                       final scaffoldMessenger =
                                           ScaffoldMessenger.of(context);
@@ -178,7 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         _usernameController.text,
                                         _passwordController.text,
                                       );
-                  
+
                                       if (result) {
                                         scaffoldMessenger.showSnackBar(
                                           const SnackBar(

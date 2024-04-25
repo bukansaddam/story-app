@@ -9,8 +9,38 @@ import 'package:story_app/provider/image_provider.dart';
 import 'package:story_app/provider/story_provider.dart';
 import 'package:story_app/screen/widgets/card_item.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    final apiProvider = context.read<StoryProvider>();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        if (apiProvider.pageItems != null) {
+          apiProvider.fetchAllStory();
+        }
+      }
+    });
+
+    Future.microtask(() async => apiProvider.fetchAllStory());
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,29 +134,43 @@ class HomeScreen extends StatelessWidget {
         if (storyProvider.state == ResultState.loading) {
           return const Center(child: CircularProgressIndicator());
         } else if (storyProvider.state == ResultState.hasData) {
+          final stories = storyProvider.stories;
           return Padding(
               padding: const EdgeInsets.all(16.0),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   if (constraints.maxWidth <= 600) {
                     return ListView.builder(
-                      itemCount: storyProvider.storyResponse.listStory.length,
+                      controller: scrollController,
+                      itemCount: stories.length +
+                          (storyProvider.pageItems != null ? 1 : 0),
                       itemBuilder: (context, index) {
-                        final story =
-                            storyProvider.storyResponse.listStory[index];
+                        if (index == stories.length &&
+                            storyProvider.pageItems != null) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final story = stories[index];
                         return CardItem(context: context, story: story);
                       },
                     );
                   } else if (constraints.maxWidth <= 1200) {
                     return GridView.builder(
+                      controller: scrollController,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
                       ),
-                      itemCount: storyProvider.storyResponse.listStory.length,
+                      itemCount: stories.length +
+                          (storyProvider.pageItems != null ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == stories.length &&
+                            storyProvider.pageItems != null) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
                         final story =
                             storyProvider.storyResponse.listStory[index];
                         return CardItem(context: context, story: story);
@@ -134,14 +178,21 @@ class HomeScreen extends StatelessWidget {
                     );
                   } else {
                     return GridView.builder(
+                      controller: scrollController,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
                       ),
-                      itemCount: storyProvider.storyResponse.listStory.length,
+                      itemCount: stories.length +
+                          (storyProvider.pageItems != null ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == stories.length &&
+                            storyProvider.pageItems != null) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
                         final story =
                             storyProvider.storyResponse.listStory[index];
                         return CardItem(context: context, story: story);
@@ -151,7 +202,9 @@ class HomeScreen extends StatelessWidget {
                 },
               ));
         } else {
-          return Center(child: Text(storyProvider.message ?? 'Error'));
+          return Center(
+              child: Text(
+                  storyProvider.message ?? 'Error ${storyProvider.message}'));
         }
       },
     );
