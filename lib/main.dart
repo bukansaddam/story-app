@@ -10,6 +10,7 @@ import 'package:story_app/screen/add_story_screen.dart';
 import 'package:story_app/screen/detail_screen.dart';
 import 'package:story_app/screen/home_screen.dart';
 import 'package:story_app/screen/login_screen.dart';
+import 'package:story_app/screen/maps_screen.dart';
 import 'package:story_app/screen/register_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/screen/splash_screen.dart';
@@ -41,6 +42,11 @@ final GoRouter _router = GoRouter(initialLocation: '/', routes: [
             final id = state.pathParameters['id'];
             return DetailScreen(id: id!);
           },
+        ),
+        GoRoute(
+          path: 'maps',
+          name: 'maps',
+          builder: (context, state) => const MapsScreen(),
         ),
       ]),
   GoRoute(

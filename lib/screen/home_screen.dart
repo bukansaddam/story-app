@@ -48,6 +48,12 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           title: const Text('Story App'),
           actions: [
+            IconButton(
+              onPressed: () {
+                GoRouter.of(context).goNamed('maps');
+              },
+              icon: const Icon(Icons.map_outlined),
+            ),
             Consumer<AuthProvider>(
               builder: (context, authProvider, _) {
                 final isLoggedIn = authProvider.checkLogin();
@@ -62,12 +68,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else {
                   return IconButton(
                     onPressed: () {
-                      authProvider.logout();
-                      GoRouter.of(context).goNamed('login');
-                      scaffoldMessenger.showSnackBar(
-                        const SnackBar(
-                          content: Text('Logout success'),
-                        ),
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Logout'),
+                            content: const Text('Are you sure want to logout?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  authProvider.logout();
+                                  scaffoldMessenger.showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Logout success'),
+                                    ),
+                                  );
+                                  GoRouter.of(context).goNamed('login');
+                                },
+                                child: const Text('Yes'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('No'),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
                     icon: const Icon(Icons.logout),
