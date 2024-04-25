@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/provider/story_provider.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 
 class MapsScreen extends StatefulWidget {
   const MapsScreen({super.key});
@@ -14,6 +15,9 @@ class _MapsScreenState extends State<MapsScreen> {
   final dicodingOffice = const LatLng(-6.8957473, 107.6337669);
 
   late GoogleMapController mapController;
+
+  geo.Placemark? placemark;
+  late LatLng? latLng;
 
   late final Set<Marker> markers;
 
@@ -45,11 +49,28 @@ class _MapsScreenState extends State<MapsScreen> {
               title: story.name,
               snippet: story.description,
             ),
-            onTap: () {
+            onTap: () async {
               mapController.animateCamera(
                 CameraUpdate.newLatLngZoom(
                     LatLng(story.lat ?? 0.0, story.lon ?? 0.0), 18),
               );
+              try {
+                final List<geo.Placemark> info =
+                    await geo.placemarkFromCoordinates(story.lat!, story.lon!);
+
+                if (info.isNotEmpty) {
+                  setState(() {
+                    placemark = info.first;
+                  });
+                } else {
+                  debugPrint('placemark: No placemark found');
+                }
+              } catch (e) {
+                setState(() {
+                  placemark = null;
+                });
+                debugPrint('Error fetching placemark: $e');
+              }
             },
           ),
         )
@@ -89,6 +110,13 @@ class _MapsScreenState extends State<MapsScreen> {
                   child: Stack(
                     children: [
                       GoogleMap(
+                        onTap: (argument) {
+                          setState(
+                            () {
+                              placemark = null;
+                            },
+                          );
+                        },
                         markers: markers,
                         initialCameraPosition:
                             CameraPosition(target: dicodingOffice, zoom: 18),
@@ -111,7 +139,7 @@ class _MapsScreenState extends State<MapsScreen> {
                         mapToolbarEnabled: false,
                       ),
                       Positioned(
-                        bottom: 16,
+                        top: 16,
                         right: 16,
                         child: Column(
                           children: [
@@ -136,6 +164,53 @@ class _MapsScreenState extends State<MapsScreen> {
                           ],
                         ),
                       ),
+                      if (placemark != null)
+                        Positioned(
+                          bottom: 16,
+                          left: 16,
+                          right: 16,
+                          child: Container(
+                            height: 100,
+                            padding: const EdgeInsets.all(16),
+                            constraints: const BoxConstraints(maxWidth: 700),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(20)),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  blurRadius: 20,
+                                  offset: Offset.zero,
+                                  color: Colors.grey.withOpacity(0.5),
+                                )
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Text(placemark?.street ?? '',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          )),
+                                      Text(
+                                          '${placemark?.subLocality}, ${placemark?.locality}, ${placemark?.postalCode}, ${placemark?.country}',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                     ],
                   ),
                 ),

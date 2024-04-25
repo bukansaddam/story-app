@@ -108,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
         body: _buildBody(context),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // GoRouter.of(context).goNamed('add_story');
             _buildBottomSheet(context);
           },
           shape: const CircleBorder(),
