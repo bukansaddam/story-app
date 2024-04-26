@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +17,9 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  late GoogleMapController mapController;
 
-    late GoogleMapController mapController;
-
-    geo.Placemark? placemark;
+  geo.Placemark? placemark;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +107,6 @@ class _DetailScreenState extends State<DetailScreen> {
             setState(() {
               mapController = controller;
             });
-          
           },
           initialCameraPosition: CameraPosition(
             target: LatLng(data.story.lat ?? 0, data.story.lon ?? 0),
@@ -121,22 +118,22 @@ class _DetailScreenState extends State<DetailScreen> {
               position: LatLng(data.story.lat ?? 0, data.story.lon ?? 0),
               onTap: () async {
                 try {
-                final info =
-                    await geo.placemarkFromCoordinates(data.story.lat!, data.story.lon!);
+                  final info = await geo.placemarkFromCoordinates(
+                      data.story.lat!, data.story.lon!);
 
-                if (info.isNotEmpty) {
+                  if (info.isNotEmpty) {
+                    setState(() {
+                      placemark = info.first;
+                    });
+                  } else {
+                    debugPrint('placemark: No placemark found');
+                  }
+                } catch (e) {
                   setState(() {
-                    placemark = info.first;
+                    placemark = null;
                   });
-                } else {
-                  debugPrint('placemark: No placemark found');
+                  debugPrint('Error fetching placemark: $e');
                 }
-              } catch (e) {
-                setState(() {
-                  placemark = null;
-                });
-                debugPrint('Error fetching placemark: $e');
-              }
               },
             ),
           },

@@ -164,8 +164,7 @@ class _MapsScreenState extends State<MapsScreen> {
                           ],
                         ),
                       ),
-                      if (placemark != null)
-                        CardLocation(placemark: placemark)
+                      if (placemark != null) CardLocation(placemark: placemark)
                     ],
                   ),
                 ),
