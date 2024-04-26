@@ -106,13 +106,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         TextFormField(
                           controller: _usernameController,
                           decoration: const InputDecoration(
-                            labelText: 'Username',
+                            labelText: 'Email',
                           ),
                           style: const TextStyle(color: Colors.black),
                           cursorColor: Colors.orange,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your username.';
+                              return 'Please enter your email.';
                             }
                             return null;
                           },
