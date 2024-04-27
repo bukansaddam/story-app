@@ -110,7 +110,7 @@ class _DetailScreenState extends State<DetailScreen> {
           },
           initialCameraPosition: CameraPosition(
             target: LatLng(data.story.lat ?? 0, data.story.lon ?? 0),
-            zoom: 18,
+            zoom: 10,
           ),
           markers: <Marker>{
             Marker(
@@ -124,6 +124,10 @@ class _DetailScreenState extends State<DetailScreen> {
                   if (info.isNotEmpty) {
                     setState(() {
                       placemark = info.first;
+                      mapController.animateCamera(
+                        CameraUpdate.newLatLngZoom(
+                            LatLng(data.story.lat!, data.story.lon!), 16),
+                      );
                     });
                   } else {
                     debugPrint('placemark: No placemark found');

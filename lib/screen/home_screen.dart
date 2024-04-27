@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             IconButton(
               onPressed: () {
-                GoRouter.of(context).goNamed('maps');
+                context.goNamed('maps');
               },
               icon: const Icon(Icons.map_outlined),
             ),
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (isLoggedIn == false) {
                   return IconButton(
                     onPressed: () {
-                      GoRouter.of(context).goNamed('login');
+                      context.goNamed('login');
                     },
                     icon: const Icon(Icons.login),
                   );
@@ -83,13 +83,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       content: Text('Logout success'),
                                     ),
                                   );
-                                  GoRouter.of(context).goNamed('login');
+                                  context.goNamed('login');
                                 },
                                 child: const Text('Yes'),
                               ),
                               TextButton(
                                 onPressed: () {
-                                  GoRouter.of(context).pop();
+                                  context.pop();
                                 },
                                 child: const Text('No'),
                               ),
@@ -246,8 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (pickedFile != null) {
       provider.setImageFile(pickedFile);
       provider.setImagePath(pickedFile.path);
-      GoRouter.of(context).goNamed('add_story');
-      GoRouter.of(context).pop();
+      context.goNamed('add_story');
+      context.pop();
     }
   }
 
@@ -267,8 +267,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (pickedFile != null) {
       provider.setImageFile(pickedFile);
       provider.setImagePath(pickedFile.path);
-      GoRouter.of(context).goNamed('add_story');
-      GoRouter.of(context).pop();
+      context.goNamed('add_story');
+      context.pop();
     }
   }
 }

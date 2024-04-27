@@ -16,7 +16,6 @@ class CardLocation extends StatelessWidget {
       left: 16,
       right: 16,
       child: Container(
-        height: 100,
         padding: const EdgeInsets.all(16),
         constraints: const BoxConstraints(maxWidth: 700),
         decoration: BoxDecoration(

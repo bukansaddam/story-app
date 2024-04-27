@@ -7,6 +7,7 @@ import 'package:story_app/provider/auth_provider.dart';
 import 'package:story_app/provider/story_provider.dart';
 import 'package:story_app/provider/upload_provider.dart';
 import 'package:story_app/screen/add_story_screen.dart';
+import 'package:story_app/screen/choose_location.dart';
 import 'package:story_app/screen/detail_screen.dart';
 import 'package:story_app/screen/home_screen.dart';
 import 'package:story_app/screen/login_screen.dart';
@@ -31,10 +32,16 @@ final GoRouter _router = GoRouter(initialLocation: '/', routes: [
       builder: (context, state) => const HomeScreen(),
       routes: [
         GoRoute(
-          path: 'add',
-          name: 'add_story',
-          builder: (context, state) => const AddStoryScreen(),
-        ),
+            path: 'add',
+            name: 'add_story',
+            builder: (context, state) => const AddStoryScreen(),
+            routes: [
+              GoRoute(
+                path: 'choose',
+                name: 'choose_location',
+                builder: (context, state) => const ChooseLocationScreen(),
+              )
+            ]),
         GoRoute(
           path: 'detail/:id',
           name: 'detail',

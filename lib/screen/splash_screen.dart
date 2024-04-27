@@ -18,9 +18,9 @@ class _SplashScreenState extends State<SplashScreen> {
     final name = await authRepository.getUser();
     debugPrint('IsLoggedIn: $isLoggedIn, Name: $name');
     if (name == null) {
-      GoRouter.of(context).goNamed('login');
+      context.goNamed('login');
     } else {
-      GoRouter.of(context).goNamed('home');
+      context.goNamed('home');
     }
   }
 

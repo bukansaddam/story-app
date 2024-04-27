@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/provider/image_provider.dart';
@@ -21,6 +22,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
   final _storyDescriptionController = TextEditingController();
   bool _includeLocation = false;
   late LocationData? locationData;
+
+  LatLng choosenLocation = const LatLng(0, 0);
 
   @override
   Widget build(BuildContext context) {
@@ -62,19 +65,38 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Checkbox(
-                      value: _includeLocation,
-                      onChanged: (newValue) async {
-                        setState(() {
-                          _includeLocation = newValue!;
-                          if (_includeLocation) {
-                            _onMyLocationPressed();
-                          }
-                        });
-                      },
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _includeLocation,
+                          onChanged: (newValue) async {
+                            setState(() {
+                              _includeLocation = newValue!;
+                              if (_includeLocation) {
+                                _onMyLocationPressed();
+                                choosenLocation = const LatLng(0, 0);
+                              }
+                            });
+                          },
+                        ),
+                        const Text('Include My Location'),
+                      ],
                     ),
-                    const Text('Include Location'),
+                    _includeLocation
+                        ? TextButton(
+                            onPressed: () async {
+                              final result = await context
+                                  .pushNamed('choose_location') as LatLng;
+                              setState(() {
+                                choosenLocation = result;
+                              });
+                              debugPrint('Choosen Location: $choosenLocation');
+                            },
+                            child: const Text('Choose Location'),
+                          )
+                        : const SizedBox.shrink(),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -189,9 +211,14 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
     double latitude = 0;
     double longitude = 0;
-    if (_includeLocation && locationData != null) {
-      latitude = locationData!.latitude!;
-      longitude = locationData!.longitude!;
+    if (_includeLocation) {
+      if (locationData != null && choosenLocation == const LatLng(0, 0)) {
+        latitude = locationData!.latitude!;
+        longitude = locationData!.longitude!;
+      } else {
+        latitude = choosenLocation.latitude;
+        longitude = choosenLocation.longitude;
+      }
     }
 
     await uploadProvider.upload(
@@ -208,7 +235,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
     _snackBar(uploadProvider.uploadResponse?.message ?? 'Upload failed');
 
-    GoRouter.of(context).goNamed('home');
+    context.goNamed('home');
   }
 
   _snackBar(String message) {
