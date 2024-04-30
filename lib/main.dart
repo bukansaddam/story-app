@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:story_app/data/api/api_service.dart';
-import 'package:story_app/data/local/auth_repository.dart';
 import 'package:story_app/provider/image_provider.dart';
 import 'package:story_app/provider/auth_provider.dart';
 import 'package:story_app/provider/story_provider.dart';
@@ -15,8 +13,10 @@ import 'package:story_app/screen/maps_screen.dart';
 import 'package:story_app/screen/register_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:story_app/screen/splash_screen.dart';
+import 'injection.dart' as di;
 
 void main() {
+  di.init();
   runApp(const MyApp());
 }
 
@@ -76,25 +76,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(
-            apiService: ApiService(),
-            authRepository: AuthRepository(),
-          ),
+          create: (_) => di.locator<AuthProvider>(),
         ),
         ChangeNotifierProvider(
-          create: (_) => StoryProvider(
-            apiService: ApiService(),
-            authRepository: AuthRepository(),
-          ),
+          create: (_) => di.locator<StoryProvider>(),
         ),
         ChangeNotifierProvider(
           create: (_) => ImagesProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => UploadProvider(
-            apiService: ApiService(),
-            authRepository: AuthRepository(),
-          ),
+          create: (_) => di.locator<UploadProvider>(),
         )
       ],
       child: MaterialApp.router(

@@ -9,7 +9,7 @@ class AuthProvider extends ChangeNotifier {
   final ApiService apiService;
   final AuthRepository authRepository;
 
-  AuthProvider({required this.apiService, required this.authRepository});
+  AuthProvider(this.apiService, this.authRepository);
 
   bool isLoadingLogin = false;
   bool isLoadingRegister = false;

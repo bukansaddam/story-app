@@ -9,7 +9,7 @@ class StoryProvider extends ChangeNotifier {
   final ApiService apiService;
   final AuthRepository authRepository;
 
-  StoryProvider({required this.apiService, required this.authRepository});
+  StoryProvider(this.apiService, this.authRepository);
 
   late StoryResponse _storyResponse;
   StoryResponse get storyResponse => _storyResponse;

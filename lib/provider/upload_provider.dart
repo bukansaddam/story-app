@@ -14,7 +14,7 @@ class UploadProvider extends ChangeNotifier {
   final ApiService apiService;
   final AuthRepository authRepository;
 
-  UploadProvider({required this.apiService, required this.authRepository});
+  UploadProvider(this.apiService, this.authRepository);
 
   Future<void> upload(
     List<int> bytes,
